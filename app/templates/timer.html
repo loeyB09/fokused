@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="page">
+  <header class="page-header">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 120 120" role="img">
+          <circle cx="86" cy="34" r="12" />
+          <circle cx="36" cy="86" r="12" />
+          <path d="M60 10 A50 50 0 0 0 10 60 L60 60 Z" />
+          <path d="M60 110 A50 50 0 0 0 110 60 L60 60 Z" />
+        </svg>
+      </div>
+      <h1>Welcome back @{{ username or "user" }}</h1>
+    </div>
+  </header>
+
+  <section class="timer-wrap" id="timerPage">
+    <div class="timer-notice hidden" id="timerNotice"></div>
+
+    <div class="timer-switch">
+      <button type="button" class="timer-arrow" id="timerPrev" aria-label="Previous timer">‹</button>
+      <h2 id="timerModeTitle">My Timer</h2>
+      <button type="button" class="timer-arrow" id="timerNext" aria-label="Next timer">›</button>
+    </div>
+
+    <div class="timer-slide" id="slideMyTimer">
+      <div class="timer-circle timer-circle-lg">
+        <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+          <circle class="timer-ring-track" cx="110" cy="110" r="96"></circle>
+          <circle
+            class="timer-ring-progress"
+            id="myTimerRing"
+            cx="110"
+            cy="110"
+            r="96"
+            data-radius="96"
+          ></circle>
+        </svg>
+        <span id="myTimerDisplay">25:00</span>
+      </div>
+      <label class="timer-input-row">
+        Minutes
+        <input id="myTimerMinutes" type="number" min="1" max="180" value="25" />
+      </label>
+      <div class="timer-actions">
+        <button type="button" class="primary-btn timer-btn" id="myTimerStart">Start</button>
+        <button type="button" class="ghost-btn timer-btn" id="myTimerPause">Pause</button>
+        <button type="button" class="ghost-btn timer-btn" id="myTimerReset">Reset</button>
+      </div>
+      <p class="timer-tip">Tip: Use Pomodoro timer for better concentration</p>
+    </div>
+
+    <div class="timer-slide hidden" id="slidePomodoro">
+      <p class="timer-label">work for...</p>
+      <div class="timer-circle">
+        <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+          <circle class="timer-ring-track" cx="110" cy="110" r="96"></circle>
+          <circle
+            class="timer-ring-progress"
+            id="pomoWorkRing"
+            cx="110"
+            cy="110"
+            r="96"
+            data-radius="96"
+          ></circle>
+        </svg>
+        <span id="pomoWorkDisplay">25:00</span>
+      </div>
+      <p class="timer-label">rest for...</p>
+      <div class="timer-circle">
+        <svg class="timer-ring" viewBox="0 0 220 220" aria-hidden="true">
+          <circle class="timer-ring-track" cx="110" cy="110" r="96"></circle>
+          <circle
+            class="timer-ring-progress"
+            id="pomoRestRing"
+            cx="110"
+            cy="110"
+            r="96"
+            data-radius="96"
+          ></circle>
+        </svg>
+        <span id="pomoRestDisplay">05:00</span>
+      </div>
+      <div class="timer-input-pair">
+        <label>
+          Work
+          <input id="pomoWorkMinutes" type="number" min="1" max="120" value="25" />
+        </label>
+        <label>
+          Break
+          <input id="pomoBreakMinutes" type="number" min="1" max="60" value="5" />
+        </label>
+      </div>
+      <div class="timer-actions">
+        <button type="button" class="primary-btn timer-btn" id="pomoStart">Start</button>
+        <button type="button" class="ghost-btn timer-btn" id="pomoPause">Pause</button>
+        <button type="button" class="ghost-btn timer-btn" id="pomoReset">Reset</button>
+      </div>
+    </div>
+
+    <button type="button" class="ghost-btn timer-btn hidden" id="stopAlarmBtn">Stop Alarm</button>
+  </section>
+</main>
+{% endblock %}
+{% block bottom_nav %}
+{% include "partials/bottom_nav.html" %}
+{% endblock %}

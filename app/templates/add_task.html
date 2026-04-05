@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="page">
+  <header class="page-header">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 120 120" role="img">
+          <circle cx="86" cy="34" r="12" />
+          <circle cx="36" cy="86" r="12" />
+          <path d="M60 10 A50 50 0 0 0 10 60 L60 60 Z" />
+          <path d="M60 110 A50 50 0 0 0 110 60 L60 60 Z" />
+        </svg>
+      </div>
+      <h1>Welcome back @{{ username or "user" }}</h1>
+    </div>
+  </header>
+
+  <section class="add-task">
+    <form id="addTaskForm" class="add-task-form">
+      <label class="line-field">
+        <span>Add task</span>
+        <input type="text" name="title" placeholder="" required />
+      </label>
+
+      <div class="subtask-area" id="subtaskArea">
+        <label class="line-field">
+          <span>Add sub task (optional)</span>
+          <input type="text" name="subtask" placeholder="" />
+        </label>
+      </div>
+
+      <label class="line-field">
+        <span>Add date</span>
+        <input type="date" name="due_date" />
+      </label>
+
+      <div class="chip-row">
+        <label class="chip">
+          <input type="radio" name="category" value="Personal" checked />
+          <span>Personal <i class="dot personal"></i></span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="category" value="Work" />
+          <span>Work <i class="dot work"></i></span>
+        </label>
+        <label class="chip">
+          <input type="radio" name="category" value="Study" />
+          <span>Study <i class="dot study"></i></span>
+        </label>
+      </div>
+
+      <div class="action-stack">
+        <button class="ghost-btn" type="submit">Add task</button>
+        <button class="ghost-btn" type="button" id="breakdownBtn">Break down task</button>
+        <a class="ghost-btn" href="/home">Cancel</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="ai-flow hidden" id="aiLoading">
+    <div class="ai-card">
+      <div class="ai-ring" aria-hidden="true"></div>
+      <p>AI is breaking down task, please wait</p>
+      <button class="ghost-btn" type="button" id="aiCancelLoading">Cancel</button>
+    </div>
+  </section>
+
+  <section class="ai-flow hidden" id="aiResult">
+    <div class="ai-card">
+      <h2 id="aiTaskTitle">Task</h2>
+      <div class="ai-subtasks" id="aiSubtasks"></div>
+      <button class="ghost-btn" type="button" id="aiDone">Done</button>
+      <button class="ghost-btn" type="button" id="aiCancelResult">Cancel</button>
+    </div>
+  </section>
+</main>
+{% endblock %}
+{% block bottom_nav %}
+{% include "partials/bottom_nav.html" %}
+{% endblock %}

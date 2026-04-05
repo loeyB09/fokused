@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<main class="splash">
+  <div class="splash-card">
+    <div class="logo-mark" aria-hidden="true">
+      <svg viewBox="0 0 120 120" role="img">
+        <circle cx="86" cy="34" r="12" />
+        <circle cx="36" cy="86" r="12" />
+        <path d="M60 10 A50 50 0 0 0 10 60 L60 60 Z" />
+        <path d="M60 110 A50 50 0 0 0 110 60 L60 60 Z" />
+      </svg>
+    </div>
+    <h1>Fokused</h1>
+    <p>Organize Your Mind</p>
+  </div>
+</main>
+<script>
+  window.setTimeout(() => {
+    window.location.href = "/home";
+  }, 1500);
+</script>
+{% endblock %}
