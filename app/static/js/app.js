@@ -1038,7 +1038,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const rows = Array.from(aiSubtasks.querySelectorAll(".ai-subtask-row[data-index]"));
       rows.forEach((row) => {
         const index = Number(row.dataset.index);
-        const input = row.querySelector("input");
+        const input = row.querySelector("textarea");
         if (!Number.isNaN(index) && input) {
           aiDraftSubtasks[index] = input.value.trim();
         }

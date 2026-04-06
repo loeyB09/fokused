@@ -964,7 +964,7 @@ body {
   border-radius: 16px;
   padding: 16px 24px;
   display: grid;
-  gap: 10px;
+  gap: 0;
   position: relative;
   overflow: visible;
 }
@@ -974,6 +974,8 @@ body {
   grid-template-columns: 1fr auto;
   align-items: start;
   gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(122, 145, 111, 0.2);
 }
 
 .ai-subtask-row textarea {
@@ -984,13 +986,14 @@ body {
   color: #111827;
   outline: none;
   resize: none;
-  overflow: hidden;
+  overflow: visible;
   line-height: 1.45;
   min-height: 1.5em;
   font-family: inherit;
   padding: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .ai-subtask-row button {
@@ -998,6 +1001,8 @@ body {
   background: transparent;
   color: #6e835f;
   cursor: pointer;
+  align-self: start;
+  margin-top: 2px;
 }
 
 .ai-nav {
@@ -1021,6 +1026,10 @@ body {
 
 .ai-subtask-row textarea[readonly] {
   cursor: default;
+}
+
+.ai-subtask-row:last-of-type {
+  border-bottom: none;
 }
 
 @media (max-width: 480px) {
