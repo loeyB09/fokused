@@ -154,6 +154,10 @@ def create_app() -> Flask:
 
     db.init_app(app)
 
+    # Create tables automatically so hosted environments do not need a manual init step.
+    with app.app_context():
+        db.create_all()
+
     @app.before_request
     def start_timer() -> None:
         g.start_time = time.perf_counter()
