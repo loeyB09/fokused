@@ -12,6 +12,12 @@ const escapeHtml = (value) =>
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
 
+const autoResizeTextarea = (field) => {
+  if (!field) return;
+  field.style.height = "auto";
+  field.style.height = `${field.scrollHeight}px`;
+};
+
 const renderTaskRow = (task) => {
   const done = task.subtask_count ? Math.round((task.subtask_done / task.subtask_count) * 100) : 0;
   return `
@@ -945,6 +951,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const aiCancelLoading = document.getElementById("aiCancelLoading");
   const aiCancelResult = document.getElementById("aiCancelResult");
   const aiDone = document.getElementById("aiDone");
+  let aiDraftSubtasks = [];
+  let aiDraftPage = 0;
 
   if (subtaskArea) {
     const ensureTrailingInput = () => {
@@ -1021,54 +1029,77 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!aiResult || !aiSubtasks || !aiTaskTitle) return;
     aiTaskTitle.textContent = title || "Task";
     const perPage = 4;
-    let page = 0;
-    const items = subtasks.slice();
+    aiDraftPage = 0;
+    aiDraftSubtasks = subtasks
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+
+    const saveVisiblePage = () => {
+      const rows = Array.from(aiSubtasks.querySelectorAll(".ai-subtask-row[data-index]"));
+      rows.forEach((row) => {
+        const index = Number(row.dataset.index);
+        const input = row.querySelector("input");
+        if (!Number.isNaN(index) && input) {
+          aiDraftSubtasks[index] = input.value.trim();
+        }
+      });
+      aiDraftSubtasks = aiDraftSubtasks.filter(Boolean);
+    };
 
     const renderPage = () => {
       aiSubtasks.innerHTML = "";
-      const start = page * perPage;
-      const slice = items.slice(start, start + perPage);
+      const start = aiDraftPage * perPage;
+      const slice = aiDraftSubtasks.slice(start, start + perPage);
 
       slice.forEach((text, idx) => {
         const row = document.createElement("div");
         row.className = "ai-subtask-row";
+        row.dataset.index = String(start + idx);
         row.innerHTML = `
-          <input type="text" value="${text.replace(/"/g, "&quot;")}" readonly />
+          <textarea readonly rows="1">${escapeHtml(text)}</textarea>
           <button type="button" class="ai-edit" aria-label="Edit">✎</button>
         `;
-        const input = row.querySelector("input");
+        const input = row.querySelector("textarea");
         const editBtn = row.querySelector(".ai-edit");
+        autoResizeTextarea(input);
         editBtn.addEventListener("click", () => {
           input.removeAttribute("readonly");
           input.focus();
         });
+        input.addEventListener("input", () => autoResizeTextarea(input));
         input.addEventListener("blur", () => {
           const value = input.value.trim();
-          items[start + idx] = value;
+          aiDraftSubtasks[start + idx] = value;
           input.setAttribute("readonly", "readonly");
+          autoResizeTextarea(input);
         });
         aiSubtasks.appendChild(row);
       });
 
       const addRow = document.createElement("div");
       addRow.className = "ai-subtask-row";
-      addRow.innerHTML = `<input type="text" placeholder="Add subtask" />`;
-      addRow.querySelector("input").addEventListener("blur", (event) => {
+      addRow.innerHTML = `<textarea rows="1" placeholder="Add subtask"></textarea>`;
+      const addField = addRow.querySelector("textarea");
+      autoResizeTextarea(addField);
+      addField.addEventListener("input", () => autoResizeTextarea(addField));
+      addField.addEventListener("blur", (event) => {
         const value = event.target.value.trim();
         if (value) {
-          items.push(value);
+          saveVisiblePage();
+          aiDraftSubtasks.push(value);
           renderPage();
         }
       });
       aiSubtasks.appendChild(addRow);
 
-      if (items.length > perPage) {
+      if (aiDraftSubtasks.length > perPage) {
         const prev = document.createElement("button");
         prev.className = "ai-nav prev";
         prev.type = "button";
         prev.textContent = "‹";
         prev.addEventListener("click", () => {
-          page = Math.max(0, page - 1);
+          saveVisiblePage();
+          aiDraftPage = Math.max(0, aiDraftPage - 1);
           renderPage();
         });
 
@@ -1077,7 +1108,8 @@ document.addEventListener("DOMContentLoaded", () => {
         next.type = "button";
         next.textContent = "›";
         next.addEventListener("click", () => {
-          page = Math.min(Math.floor((items.length - 1) / perPage), page + 1);
+          saveVisiblePage();
+          aiDraftPage = Math.min(Math.floor((aiDraftSubtasks.length - 1) / perPage), aiDraftPage + 1);
           renderPage();
         });
 
@@ -1103,11 +1135,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (aiDone) {
     aiDone.addEventListener("click", () => {
-      if (!subtaskArea || !aiSubtasks || !subtaskArea.addSubtaskValue) return;
-      const values = Array.from(aiSubtasks.querySelectorAll("input"))
-        .map((input) => input.value.trim())
-        .filter(Boolean);
-      values.forEach((value) => subtaskArea.addSubtaskValue(value));
+      if (!subtaskArea || !subtaskArea.addSubtaskValue) return;
+      const rows = Array.from(aiSubtasks.querySelectorAll(".ai-subtask-row[data-index]"));
+      rows.forEach((row) => {
+        const index = Number(row.dataset.index);
+        const input = row.querySelector("textarea");
+        if (!Number.isNaN(index) && input) {
+          aiDraftSubtasks[index] = input.value.trim();
+        }
+      });
+      aiDraftSubtasks
+        .map((value) => value.trim())
+        .filter(Boolean)
+        .forEach((value) => subtaskArea.addSubtaskValue(value));
       closeAiFlow();
     });
   }

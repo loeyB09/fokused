@@ -137,6 +137,7 @@ body {
 
 .home-task-row {
   flex: 1;
+  min-width: 0;
 }
 
 .home-task-bottom {
@@ -213,6 +214,7 @@ body {
 .overdue-main {
   display: grid;
   gap: 4px;
+  min-width: 0;
 }
 
 .overdue-date {
@@ -567,6 +569,8 @@ body {
 .task-title {
   color: #111827;
   text-decoration: none;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .task-title:hover {
@@ -932,6 +936,7 @@ body {
   display: grid;
   gap: 18px;
   justify-items: center;
+  overflow: visible;
 }
 
 .ai-ring {
@@ -957,26 +962,35 @@ body {
   width: 100%;
   background: #d8e6d1;
   border-radius: 16px;
-  padding: 16px;
+  padding: 16px 24px;
   display: grid;
   gap: 10px;
   position: relative;
+  overflow: visible;
 }
 
 .ai-subtask-row {
   display: grid;
   grid-template-columns: 1fr auto;
-  align-items: center;
+  align-items: start;
   gap: 12px;
 }
 
-.ai-subtask-row input {
+.ai-subtask-row textarea {
   width: 100%;
   border: none;
   background: transparent;
   font-size: 1rem;
   color: #111827;
   outline: none;
+  resize: none;
+  overflow: hidden;
+  line-height: 1.45;
+  min-height: 1.5em;
+  font-family: inherit;
+  padding: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .ai-subtask-row button {
@@ -998,15 +1012,42 @@ body {
 }
 
 .ai-nav.prev {
-  left: -20px;
+  left: 6px;
 }
 
 .ai-nav.next {
-  right: -20px;
+  right: 6px;
 }
 
-.ai-subtask-row input[readonly] {
+.ai-subtask-row textarea[readonly] {
   cursor: default;
+}
+
+@media (max-width: 480px) {
+  .ai-flow {
+    padding: 16px;
+  }
+
+  .ai-card {
+    width: min(100%, 360px);
+    gap: 14px;
+  }
+
+  .ai-subtasks {
+    padding: 14px 28px;
+  }
+
+  .ai-subtask-row {
+    gap: 8px;
+  }
+
+  .ai-subtask-row textarea {
+    font-size: 0.96rem;
+  }
+
+  .ai-nav {
+    font-size: 28px;
+  }
 }
 
 @keyframes spin {
