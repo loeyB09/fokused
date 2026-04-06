@@ -571,55 +571,81 @@ const notifyTimerDone = (title, body, noticeEl = null) => {
   }
 };
 
-const playAlarmChime = () => {
+let sharedAudioContext = null;
+
+const getSharedAudioContext = async () => {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) return;
+  if (!AudioCtx) return null;
+  if (!sharedAudioContext) {
+    sharedAudioContext = new AudioCtx();
+  }
+  if (sharedAudioContext.state === "suspended") {
+    try {
+      await sharedAudioContext.resume();
+    } catch (_error) {
+      return null;
+    }
+  }
+  return sharedAudioContext;
+};
 
-  const ctx = new AudioCtx();
-  const master = ctx.createGain();
-  master.gain.setValueAtTime(0.0001, ctx.currentTime);
-  master.connect(ctx.destination);
+const unlockTimerAudio = async () => {
+  await getSharedAudioContext();
+};
 
-  const notes = [
-    { freq: 587.33, start: 0.0, duration: 1.1 },
-    { freq: 739.99, start: 0.34, duration: 1.05 },
-    { freq: 880.0, start: 0.72, duration: 1.2 },
-  ];
+const playAlarmChime = () => {
+  getSharedAudioContext().then((ctx) => {
+    if (!ctx) return;
 
-  notes.forEach((note) => {
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const noteGain = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0.0001, ctx.currentTime);
+    master.connect(ctx.destination);
 
-    osc1.type = "triangle";
-    osc2.type = "sine";
-    osc1.frequency.setValueAtTime(note.freq, ctx.currentTime + note.start);
-    osc2.frequency.setValueAtTime(note.freq * 2, ctx.currentTime + note.start);
+    const notes = [
+      { freq: 587.33, start: 0.0, duration: 1.1 },
+      { freq: 739.99, start: 0.34, duration: 1.05 },
+      { freq: 880.0, start: 0.72, duration: 1.2 },
+    ];
 
-    filter.type = "lowpass";
-    filter.frequency.setValueAtTime(1800, ctx.currentTime + note.start);
-    filter.Q.setValueAtTime(0.8, ctx.currentTime + note.start);
+    notes.forEach((note) => {
+      const osc1 = ctx.createOscillator();
+      const osc2 = ctx.createOscillator();
+      const noteGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
 
-    noteGain.gain.setValueAtTime(0.0001, ctx.currentTime + note.start);
-    noteGain.gain.exponentialRampToValueAtTime(0.17, ctx.currentTime + note.start + 0.03);
-    noteGain.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + note.start + 0.18);
-    noteGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + note.start + note.duration);
+      osc1.type = "triangle";
+      osc2.type = "sine";
+      osc1.frequency.setValueAtTime(note.freq, ctx.currentTime + note.start);
+      osc2.frequency.setValueAtTime(note.freq * 2, ctx.currentTime + note.start);
 
-    osc1.connect(filter);
-    osc2.connect(filter);
-    filter.connect(noteGain);
-    noteGain.connect(master);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1800, ctx.currentTime + note.start);
+      filter.Q.setValueAtTime(0.8, ctx.currentTime + note.start);
 
-    osc1.start(ctx.currentTime + note.start);
-    osc2.start(ctx.currentTime + note.start);
-    osc1.stop(ctx.currentTime + note.start + note.duration);
-    osc2.stop(ctx.currentTime + note.start + note.duration);
+      noteGain.gain.setValueAtTime(0.0001, ctx.currentTime + note.start);
+      noteGain.gain.exponentialRampToValueAtTime(0.17, ctx.currentTime + note.start + 0.03);
+      noteGain.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + note.start + 0.18);
+      noteGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + note.start + note.duration);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(noteGain);
+      noteGain.connect(master);
+
+      osc1.start(ctx.currentTime + note.start);
+      osc2.start(ctx.currentTime + note.start);
+      osc1.stop(ctx.currentTime + note.start + note.duration);
+      osc2.stop(ctx.currentTime + note.start + note.duration);
+    });
+
+    master.gain.exponentialRampToValueAtTime(0.42, ctx.currentTime + 0.06);
+    master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.3);
+    window.setTimeout(() => {
+      try {
+        master.disconnect();
+      } catch (_error) {}
+    }, 2600);
   });
-
-  master.gain.exponentialRampToValueAtTime(0.42, ctx.currentTime + 0.06);
-  master.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.3);
-  window.setTimeout(() => ctx.close().catch(() => {}), 2600);
 };
 
 const loadTimerPage = () => {
@@ -671,6 +697,8 @@ const loadTimerPage = () => {
   };
 
   let alarmIntervalId = null;
+
+  const timerIsActive = () => myState.running || pomoState.running || alarmIntervalId !== null;
 
   const stopRepeatingAlarm = () => {
     if (alarmIntervalId !== null) {
@@ -818,7 +846,8 @@ const loadTimerPage = () => {
   });
 
   myMinutesInput.addEventListener("change", setMyFromInput);
-  myStart.addEventListener("click", () => {
+  myStart.addEventListener("click", async () => {
+    await unlockTimerAudio();
     stopRepeatingAlarm();
     if (!myState.running) {
       if (myState.remaining <= 0) setMyFromInput();
@@ -843,7 +872,8 @@ const loadTimerPage = () => {
 
   pomoWorkInput.addEventListener("change", setPomoFromInput);
   pomoBreakInput.addEventListener("change", setPomoFromInput);
-  pomoStart.addEventListener("click", () => {
+  pomoStart.addEventListener("click", async () => {
+    await unlockTimerAudio();
     stopRepeatingAlarm();
     if (!pomoState.running) {
       if (pomoState.remaining <= 0) setPomoFromInput();
@@ -874,7 +904,15 @@ const loadTimerPage = () => {
     stopAlarmBtn.addEventListener("click", stopRepeatingAlarm);
   }
 
-  window.addEventListener("beforeunload", () => {
+  const handleBeforeUnload = (event) => {
+    if (timerIsActive()) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+  };
+
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  window.addEventListener("pagehide", () => {
     stopRepeatingAlarm();
     window.clearInterval(ticker);
   });
