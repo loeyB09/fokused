@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ["python311", "gcc"]
+
+[phases.install]
+cmds = ["cd app && pip install --no-cache-dir -r requirements.txt"]
+
+[start]
+cmd = "cd app && gunicorn app:app --bind 0.0.0.0:$PORT"
