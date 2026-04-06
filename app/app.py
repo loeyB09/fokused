@@ -205,6 +205,10 @@ def create_app() -> Flask:
     def index():
         return render_template("index.html")
 
+    @app.route("/health")
+    def healthcheck():
+        return jsonify({"status": "ok"}), 200
+
     @app.route("/home")
     @login_required
     def home():

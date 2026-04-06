@@ -5,7 +5,7 @@
   },
   "deploy": {
     "startCommand": "cd app && gunicorn app:app --bind 0.0.0.0:$PORT",
-    "healthcheckPath": "/signin",
+    "healthcheckPath": "/health",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
