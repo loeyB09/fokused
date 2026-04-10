@@ -88,6 +88,41 @@ const renderOverdueList = (overdueTasks) => {
   `;
 };
 
+const renderAllTasksPanel = (tasks) => {
+  return `
+    <section class="home-section">
+      <button class="all-tasks-card" id="allTasksTrigger" type="button">
+        <div class="home-section-head">
+          <h2>All tasks</h2>
+          <span>${tasks.length} total</span>
+        </div>
+        <p>Tap to view every task you created.</p>
+      </button>
+      <div class="home-card-stack hidden" id="allTasksSection">
+        ${
+          tasks.length
+            ? tasks
+                .map((task) => {
+                  const status = task.completed ? "Completed" : "Incomplete";
+                  const dueText = task.due_date ? formatDate(task.due_date) : "No date";
+                  return `
+                    <article class="all-task-item">
+                      <div class="all-task-main">
+                        <a class="task-title" href="/tasks/${task.id}">${escapeHtml(task.title)}</a>
+                        <span class="all-task-date">${dueText}</span>
+                      </div>
+                      <span class="task-badge ${task.completed ? "task-badge-today" : "task-badge-muted"}">${status}</span>
+                    </article>
+                  `;
+                })
+                .join("")
+            : `<div class="all-task-empty">No tasks created yet.</div>`
+        }
+      </div>
+    </section>
+  `;
+};
+
 const bindOverdueToggle = () => {
   const overdueTrigger = document.getElementById("overdueTrigger");
   const overdueSection = document.getElementById("overdueSection");
@@ -97,6 +132,19 @@ const bindOverdueToggle = () => {
     overdueSection.classList.toggle("hidden");
     if (!overdueSection.classList.contains("hidden")) {
       overdueSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+};
+
+const bindAllTasksToggle = () => {
+  const trigger = document.getElementById("allTasksTrigger");
+  const section = document.getElementById("allTasksSection");
+  if (!trigger || !section) return;
+
+  trigger.addEventListener("click", () => {
+    section.classList.toggle("hidden");
+    if (!section.classList.contains("hidden")) {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
 };
@@ -374,11 +422,13 @@ const loadHome = async () => {
         </div>
       </section>
       ${renderOverdueList(overdueTasks)}
+      ${renderAllTasksPanel(tasks)}
       <a class="empty-state-link" href="/calendar">
         There's no tasks for today. Check calendar for more tasks.
       </a>
     `;
     bindOverdueToggle();
+    bindAllTasksToggle();
     return;
   }
 
@@ -461,9 +511,12 @@ const loadHome = async () => {
       </p>
       <a class="task-open-link" href="/calendar">Check calendar</a>
     </section>
+
+    ${renderAllTasksPanel(tasks)}
   `;
   bindTaskCheckboxes(taskList, loadHome);
   bindOverdueToggle();
+  bindAllTasksToggle();
 };
 
 const loadTaskDetail = async () => {

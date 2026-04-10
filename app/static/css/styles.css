@@ -200,6 +200,52 @@ body {
   line-height: 1.5;
 }
 
+.all-tasks-card {
+  width: 100%;
+  border: 1px solid rgba(122, 145, 111, 0.14);
+  border-radius: 20px;
+  padding: 16px;
+  background: linear-gradient(180deg, #fffcf7 0%, #f2eee6 100%);
+  text-align: left;
+  cursor: pointer;
+}
+
+.all-tasks-card p {
+  margin: 0;
+  color: #687264;
+  line-height: 1.45;
+}
+
+.all-task-item {
+  background: #fffcf7;
+  border: 1px solid rgba(122, 145, 111, 0.14);
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.all-task-main {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.all-task-date {
+  color: #7d847c;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.all-task-empty {
+  padding: 16px;
+  border-radius: 18px;
+  background: #fffcf7;
+  color: #687264;
+}
+
 .overdue-item {
   background: #fff8fa;
   border: 1px solid rgba(226, 160, 184, 0.28);
