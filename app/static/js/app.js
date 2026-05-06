@@ -344,10 +344,13 @@ const loadCalendarGrid = async () => {
 
   const now = new Date();
   const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-  const monthStart = new Date(currentYear, currentMonth - 1, 1);
-  const monthsToRender = 4;
   const monthFmt = new Intl.DateTimeFormat("en-US", { month: "long" });
+  const title = document.getElementById("plannerTitle");
+  if (title) {
+    title.textContent = `${currentYear} planner`;
+  }
+
+  const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   const buildMonth = (date) => {
     const year = date.getFullYear();
@@ -358,7 +361,10 @@ const loadCalendarGrid = async () => {
     const section = document.createElement("section");
     section.className = "month-block";
     section.innerHTML = `
-      <h2>${monthFmt.format(date)}</h2>
+      <div class="month-ribbon">${monthFmt.format(date)}</div>
+      <div class="month-weekdays">
+        ${weekdayLabels.map((label) => `<span>${label}</span>`).join("")}
+      </div>
       <div class="month-grid"></div>
     `;
 
@@ -382,8 +388,8 @@ const loadCalendarGrid = async () => {
     return section;
   };
 
-  for (let i = 0; i < monthsToRender; i += 1) {
-    const monthDate = new Date(monthStart.getFullYear(), monthStart.getMonth() + i, 1);
+  for (let i = 0; i < 12; i += 1) {
+    const monthDate = new Date(currentYear, i, 1);
     container.appendChild(buildMonth(monthDate));
   }
 };
