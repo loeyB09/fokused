@@ -762,13 +762,35 @@ const loadTimerPage = () => {
   };
 
   let alarmIntervalId = null;
+  let noticeTimeoutId = null;
 
   const timerIsActive = () => myState.running || pomoState.running || alarmIntervalId !== null;
+
+  const showTimerNotice = (message, sticky = false) => {
+    if (!noticeEl) return;
+    noticeEl.textContent = message;
+    noticeEl.classList.remove("hidden");
+    if (noticeTimeoutId !== null) {
+      window.clearTimeout(noticeTimeoutId);
+      noticeTimeoutId = null;
+    }
+    if (!sticky) {
+      noticeTimeoutId = window.setTimeout(() => {
+        noticeEl.classList.add("hidden");
+        noticeEl.textContent = "";
+        noticeTimeoutId = null;
+      }, 4200);
+    }
+  };
 
   const stopRepeatingAlarm = () => {
     if (alarmIntervalId !== null) {
       window.clearInterval(alarmIntervalId);
       alarmIntervalId = null;
+    }
+    if (noticeTimeoutId !== null) {
+      window.clearTimeout(noticeTimeoutId);
+      noticeTimeoutId = null;
     }
     if (noticeEl) {
       noticeEl.classList.add("hidden");
@@ -976,8 +998,57 @@ const loadTimerPage = () => {
     }
   };
 
+  const handleVisibilityChange = () => {
+    if (!timerIsActive()) {
+      window.sessionStorage.removeItem("focused-timer-return");
+      return;
+    }
+
+    if (document.visibilityState === "hidden") {
+      window.sessionStorage.setItem("focused-timer-return", "1");
+      return;
+    }
+
+    if (document.visibilityState === "visible" && window.sessionStorage.getItem("focused-timer-return")) {
+      showTimerNotice("Welcome back. Your timer is still running — let’s gently return to focus.");
+      window.sessionStorage.removeItem("focused-timer-return");
+    }
+  };
+
+  const handlePageLinkClick = (event) => {
+    const link = event.target.closest("a[href]");
+    if (!link || !timerIsActive()) return;
+
+    const href = link.getAttribute("href");
+    if (!href || href.startsWith("#")) return;
+
+    const targetUrl = new URL(link.href, window.location.origin);
+    const currentUrl = new URL(window.location.href);
+
+    if (
+      targetUrl.pathname === currentUrl.pathname &&
+      targetUrl.search === currentUrl.search &&
+      targetUrl.hash === currentUrl.hash
+    ) {
+      return;
+    }
+
+    const shouldLeave = window.confirm(
+      "Your timer is still running. Do you want to leave this screen and keep the timer going?"
+    );
+
+    if (!shouldLeave) {
+      event.preventDefault();
+      showTimerNotice("You stayed on the timer. Nice — let’s keep going.");
+    }
+  };
+
   window.addEventListener("beforeunload", handleBeforeUnload);
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  document.addEventListener("click", handlePageLinkClick, true);
   window.addEventListener("pagehide", () => {
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    document.removeEventListener("click", handlePageLinkClick, true);
     stopRepeatingAlarm();
     window.clearInterval(ticker);
   });

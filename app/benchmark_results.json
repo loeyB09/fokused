@@ -1,0 +1,168 @@
+{
+  "measured_at_utc": "2026-05-06T18:14:53Z",
+  "environment": {
+    "python": "3.13.0",
+    "platform": "darwin",
+    "database": "SQLite temporary benchmark database"
+  },
+  "system_performance": {
+    "app_import_ms": 2048.71,
+    "health": {
+      "requests": 15,
+      "avg_wall_ms": 1.99,
+      "p95_wall_ms": 4.77,
+      "avg_app_ms": 0.09,
+      "status_codes": [
+        200
+      ]
+    },
+    "signin_page": {
+      "requests": 10,
+      "avg_wall_ms": 4.37,
+      "p95_wall_ms": 10.46,
+      "avg_app_ms": 2.25,
+      "status_codes": [
+        200
+      ]
+    },
+    "home_page": {
+      "requests": 10,
+      "avg_wall_ms": 19.17,
+      "p95_wall_ms": 58.1,
+      "avg_app_ms": 2.17,
+      "status_codes": [
+        200
+      ]
+    },
+    "task_creation": {
+      "requests": 3,
+      "avg_wall_ms": 44.17,
+      "p95_wall_ms": 48.35,
+      "avg_app_ms": 42.2,
+      "status_codes": [
+        201
+      ]
+    },
+    "task_list": {
+      "requests": 15,
+      "avg_wall_ms": 9.14,
+      "p95_wall_ms": 18.19,
+      "avg_app_ms": 7.28,
+      "status_codes": [
+        200
+      ]
+    },
+    "calendar": {
+      "requests": 10,
+      "avg_wall_ms": 3.85,
+      "p95_wall_ms": 6.37,
+      "avg_app_ms": 1.91,
+      "status_codes": [
+        200
+      ]
+    },
+    "task_detail": {
+      "requests": 10,
+      "avg_wall_ms": 4.99,
+      "p95_wall_ms": 7.29,
+      "avg_app_ms": 3.53,
+      "status_codes": [
+        200
+      ]
+    },
+    "subtasks": {
+      "requests": 10,
+      "avg_wall_ms": 4.07,
+      "p95_wall_ms": 5.43,
+      "avg_app_ms": 2.62,
+      "status_codes": [
+        200
+      ]
+    }
+  },
+  "speed": {
+    "avg_ai_latency_ms": 3753.92,
+    "fastest_ai_latency_ms": 3220.58,
+    "slowest_ai_latency_ms": 4478.7
+  },
+  "memory_usage": {
+    "baseline_rss_mb": 20.36,
+    "final_rss_mb": 39.45,
+    "delta_rss_mb": 19.09
+  },
+  "ai_quality": {
+    "average_score_100": 86.7,
+    "successful_runs": 3,
+    "failed_runs": 0,
+    "samples": [
+      {
+        "prompt": "Write an essay about climate change",
+        "status_code": 200,
+        "latency_ms": 4478.7,
+        "subtasks": [
+          "Research the causes of climate change",
+          "Gather data and examples of climate change impacts",
+          "Outline the essay structure with introduction, body, and conclusion",
+          "Write the introduction explaining what climate change is",
+          "Develop body paragraphs discussing causes, effects, and solutions",
+          "Conclude by summarizing key points and emphasizing the importance of action",
+          "Proofread and edit the essay for clarity and coherence"
+        ],
+        "quality": {
+          "subtask_count": 7,
+          "unique_ratio": 1.0,
+          "actionability_ratio": 0.714,
+          "length_fit_ratio": 1.0,
+          "score_100": 90.0
+        }
+      },
+      {
+        "prompt": "Prepare for an exam",
+        "status_code": 200,
+        "latency_ms": 3562.49,
+        "subtasks": [
+          "Review the exam syllabus and topics",
+          "Gather all necessary study materials and notes",
+          "Create a study schedule with specific goals",
+          "Practice past exam papers or sample questions",
+          "Clarify any doubts with teachers or classmates",
+          "Take regular breaks and maintain a healthy routine",
+          "Get a good night's sleep before the exam day"
+        ],
+        "quality": {
+          "subtask_count": 7,
+          "unique_ratio": 1.0,
+          "actionability_ratio": 0.429,
+          "length_fit_ratio": 1.0,
+          "score_100": 80.0
+        }
+      },
+      {
+        "prompt": "Plan a weekly grocery trip",
+        "status_code": 200,
+        "latency_ms": 3220.58,
+        "subtasks": [
+          "Make a list of meals planned for the week",
+          "Check pantry and fridge for existing ingredients",
+          "Create a detailed shopping list based on meals and missing items",
+          "Choose a convenient day and time for the grocery trip",
+          "Gather reusable shopping bags and set a budget",
+          "Go to the store and purchase the items",
+          "Organize groceries at home and store properly"
+        ],
+        "quality": {
+          "subtask_count": 7,
+          "unique_ratio": 1.0,
+          "actionability_ratio": 0.714,
+          "length_fit_ratio": 1.0,
+          "score_100": 90.0
+        }
+      }
+    ]
+  },
+  "notes": [
+    "Performance measurements were taken with Flask test_client() against a temporary SQLite database.",
+    "AI quality score is a lightweight heuristic based on uniqueness, actionability, length fit, and target subtask count.",
+    "AI latency includes the real OpenAI API round trip when OPENAI_API_KEY is configured."
+  ]
+}
